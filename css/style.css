@@ -262,6 +262,9 @@ a {
 }
 
 @media (max-width: 375px) {
+  .header {
+    padding: 30px 16px;
+  }
   .header__title {
     font-size: 14px;
   }
@@ -269,7 +272,9 @@ a {
     width: 84px;
     height: 17px;
     span {
-      font-size: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16.37px;
     }
     padding: 0;
   }
