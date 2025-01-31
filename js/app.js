@@ -31,6 +31,11 @@ const getData = async (resource) => {
   changeLoader(true);
   const request = await fetch(resource);
 
+  if (!request.ok) {
+    changeLoader(false);
+    throw new Error("Something went wrong :(");
+  }
+
   const data = request.json();
   changeLoader(false);
   return data;
