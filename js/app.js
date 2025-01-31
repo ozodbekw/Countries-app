@@ -1,84 +1,91 @@
 const themeBtn = document.querySelector(".header__btn");
 const body = document.body;
 const countries = document.querySelector(".countries");
-const loader = document.querySelector(".loader-container");
-const modeFromLocal = localStorage.getItem("mode")
-  ? localStorage.getItem("mode")
-  : null;
+const loader = document.querySelector(".loader");
+const API = "https://restcountries.com/v3.1/all";
 
+// Dark mode saqlash
+const modeFromLocal = localStorage.getItem("mode");
 if (modeFromLocal) {
   body.classList.add("dark-mode");
 }
 
-const changeLoader = (value) => {
-  if (!value) {
-    loader.style.display = "none";
-  }
-};
-
 themeBtn.addEventListener("click", () => {
   body.classList.toggle("dark-mode");
-  modeFromLocal
-    ? localStorage.setItem("mode", "")
-    : localStorage.setItem("mode", "dark");
+  if (body.classList.contains("dark-mode")) {
+    localStorage.setItem("mode", "dark");
+  } else {
+    localStorage.removeItem("mode");
+  }
 });
 
-// API
-
-const API = "https://restcountries.com/v3.1/all";
-
-const getData = async (resource) => {
-  changeLoader(true);
-  const request = await fetch(resource);
-
-  if (!request.ok) {
-    changeLoader(false);
-    throw new Error("Something went wrong :(");
-  }
-
-  const data = request.json();
-  changeLoader(false);
-  return data;
+// Loaderni o‘zgartirish
+const changeLoader = (value) => {
+  loader.style.display = value ? "grid" : "none";
 };
 
-const updateUI = (resource) => {
-  resource.forEach((country) => {
-    let card = document.createElement("div");
-    card.classList.add("country__card");
-    let image = document.createElement("img");
-    image.src = country.flags.png;
-    image.classList.add("country__card-img");
-    let countryText = document.createElement("div");
-    countryText.classList.add("country__card-text");
-    let countyrTitle = document.createElement("h3");
-    countyrTitle.textContent = country.name.common;
-    countyrTitle.classList.add("country__card-title");
-    let countyrList = document.createElement("ul");
-    countyrList.classList.add("country__card--list");
-    let liPopulation = document.createElement("li");
-    liPopulation.innerHTML = `Population: <span>${country.population}</span>`;
-    liPopulation.classList.add("country__card--list-item");
-    let liRegion = document.createElement("li");
-    liRegion.innerHTML = `Region: <span>${country.region}</span>`;
-    liRegion.classList.add("country__card--list-item");
-    let liCapital = document.createElement("li");
-    liCapital.innerHTML = `Capital: <span>${country.capital}</span>`;
-    liCapital.classList.add("country__card--list-item");
+// API orqali ma'lumot olish
+const getData = async (resource) => {
+  changeLoader(true);
+  try {
+    const request = await fetch(resource);
+    if (!request.ok) {
+      throw new Error("Something went wrong :(");
+    }
+    return await request.json();
+  } finally {
+    changeLoader(false);
+  }
+};
 
-    card.append(image, countryText);
-    countryText.append(countyrTitle, countyrList);
+// Element yaratish funksiyasi
+const createElement = (tag, className, innerHTML = "") => {
+  const element = document.createElement(tag);
+  if (className) element.classList.add(className);
+  element.innerHTML = innerHTML;
+  return element;
+};
+
+// UI yangilash
+const updateUI = (resource) => {
+  countries.innerHTML = ""; // Oldingi ma'lumotlarni tozalash
+  resource.forEach((country) => {
+    let card = createElement("div", "country__card");
+    let image = createElement("img", "country__card-img");
+    image.src = country.flags.png;
+
+    let countryText = createElement("div", "country__card-text");
+    let countyrTitle = createElement(
+      "h3",
+      "country__card-title",
+      country.name.common
+    );
+    let countyrList = createElement("ul", "country__card--list");
+
+    let liPopulation = createElement(
+      "li",
+      "country__card--list-item",
+      `Population: <span>${country.population}</span>`
+    );
+    let liRegion = createElement(
+      "li",
+      "country__card--list-item",
+      `Region: <span>${country.region}</span>`
+    );
+    let liCapital = createElement(
+      "li",
+      "country__card--list-item",
+      `Capital: <span>${country.capital ? country.capital[0] : "N/A"}</span>`
+    );
+
     countyrList.append(liPopulation, liRegion, liCapital);
+    countryText.append(countyrTitle, countyrList);
+    card.append(image, countryText);
     countries.appendChild(card);
   });
 };
 
+// Ma'lumot olish va UI yangilash
 getData(API)
-  .then((data) => {
-    // data.forEach((country) => {
-    //   console.log(country);
-    // });
-    updateUI(data);
-  })
-  .catch((error) => {
-    alert(error.message);
-  });
+  .then(updateUI)
+  .catch((error) => alert(error.message));
