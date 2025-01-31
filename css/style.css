@@ -47,6 +47,10 @@
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   font-family: "Nunito Sans";
   height: 100%;
@@ -62,6 +66,10 @@ body {
   /* Colors */
   --blue-text-color: #fff;
   --white-text-color: #fff;
+}
+
+section {
+  flex-grow: 1;
 }
 
 button,
@@ -109,7 +117,7 @@ a {
 .loader {
   width: 150px;
   height: 150px;
-  background-color: grey;
+  background-color: var(--blue-bg-color);
   border-radius: 50%;
   position: absolute;
   box-shadow: 0 0 30px 4px rgba(0, 0, 0, 0.5) inset,
@@ -124,7 +132,7 @@ a {
   height: 100%;
   border-radius: 45%;
   top: -40%;
-  background-color: #fff;
+  background-color: var(--white-bg-color);
   animation: wave 5s linear infinite;
 }
 .loader:before {
@@ -311,7 +319,7 @@ a {
   }
 }
 
-@media (max-width: 375px) {
+@media (max-width: 663px) {
   .header {
     padding: 30px 16px;
   }

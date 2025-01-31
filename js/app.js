@@ -11,7 +11,7 @@ if (modeFromLocal) {
 }
 
 const changeLoader = (value) => {
-  if (value) {
+  if (!value) {
     loader.style.display = "none";
   }
 };
@@ -28,12 +28,11 @@ themeBtn.addEventListener("click", () => {
 const API = "https://restcountries.com/v3.1/all";
 
 const getData = async (resource) => {
-  changeLoader(false);
+  changeLoader(true);
   const request = await fetch(resource);
 
   const data = request.json();
-  // console.log(data);
-  changeLoader(true);
+  changeLoader(false);
   return data;
 };
 
